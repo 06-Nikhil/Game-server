@@ -1,0 +1,9 @@
+{
+  "name": "zanki-server",
+  "version": "1.0.0",
+  "description": "Multiplayer relay server for ZANKI - Blood Moon Ronin",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" },
+  "dependencies": { "ws": "^8.18.0" }
+}

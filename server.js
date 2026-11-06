@@ -37,10 +37,16 @@ async function handleUpdate(u) {
         reply_markup: { inline_keyboard: [[{ text: '⚔️ Fight!', url: appLink(code) }]] },
       },
       {
-        type: 'article', id: 'quick-' + Date.now(), title: '🌸 Invite to play ZANKI',
-        description: 'Send a button that opens the game (Quick Match)',
-        input_message_content: { message_text: '🌸 ZANKI - Blood Moon Ronin\nTap Play to jump into a Quick Match against a real player.' },
-        reply_markup: { inline_keyboard: [[{ text: '🌸 Play', url: appLink('quick') }]] },
+        type: 'article', id: 'open', title: '🎮 Open ZANKI',
+        description: 'Send a button that simply opens the game',
+        input_message_content: { message_text: '🗡 ZANKI - Blood Moon Ronin\nTap Play to open the game.' },
+        reply_markup: { inline_keyboard: [[{ text: '▶️ Play', url: appLink('') }]] },
+      },
+      {
+        type: 'article', id: 'quick-' + Date.now(), title: '🌸 Quick Match invite',
+        description: 'Send a button that opens the game and finds a random opponent',
+        input_message_content: { message_text: '🌸 ZANKI - Blood Moon Ronin\nTap Quick Match to fight a real player right away.' },
+        reply_markup: { inline_keyboard: [[{ text: '🌸 Quick Match', url: appLink('quick') }]] },
       },
     ];
     await tg('answerInlineQuery', { inline_query_id: q.id, results, cache_time: 0, is_personal: true });

@@ -24,34 +24,85 @@ let quickWaiting = null;   // ws waiting for a quick match
 async function handleUpdate(u) {
   if (!BOT_TOKEN || !BOT_USERNAME) return;
   if (u.inline_query) {
-    const q = u.inline_query, text = (q.query || '').trim();
-    // if the game asked for a specific room (switchInlineQuery), reuse that code; otherwise make a fresh one
-    let code = /^\d{5}$/.test(text) ? text : null;
-    if (!code) { do { code = String(10000 + Math.floor(Math.random() * 90000)); } while (rooms.has(code)); }
-    const who = clean(q.from && q.from.first_name, 20) || 'A ronin';
-    const results = [
-      {
-        type: 'article', id: 'duel-' + code, title: '⚔️ Challenge to a ZANKI duel',
-        description: 'Send a duel invite - the first two to tap Fight play each other',
-        input_message_content: { message_text: `⚔️ ${who} challenges you to a ZANKI duel!\nTap Fight to enter the arena. First to win 2 rounds takes the match.` },
-        reply_markup: { inline_keyboard: [[{ text: '⚔️ Fight!', url: appLink(code) }]] },
-      },
-      {
-        type: 'article', id: 'open', title: '🎮 Open ZANKI',
-        description: 'Send a button that simply opens the game',
-        input_message_content: { message_text: '🗡 ZANKI - Blood Moon Ronin\nTap Play to open the game.' },
-        reply_markup: { inline_keyboard: [[{ text: '▶️ Play', url: appLink('') }]] },
-      },
-      {
-        type: 'article', id: 'quick-' + Date.now(), title: '🌸 Quick Match invite',
-        description: 'Send a button that opens the game and finds a random opponent',
-        input_message_content: { message_text: '🌸 ZANKI - Blood Moon Ronin\nTap Quick Match to fight a real player right away.' },
-        reply_markup: { inline_keyboard: [[{ text: '🌸 Quick Match', url: appLink('quick') }]] },
-      },
-    ];
-    await tg('answerInlineQuery', { inline_query_id: q.id, results, cache_time: 0, is_personal: true });
-    return;
+ 
+if (u.inline_query) {
+  const q = u.inline_query;
+  const text = (q.query || '').trim();
+
+  let code = /^\d{5}$/.test(text) ? text : null;
+
+  if (!code) {
+    do {
+      code = String(10000 + Math.floor(Math.random() * 90000));
+    } while (rooms.has(code));
   }
+
+  const who = clean(q.from && q.from.first_name, 20) || 'A ronin';
+
+  const results = [
+    {
+      type: 'article',
+      id: 'zanki-main',
+      title: '⚔️ ZANKI: Blood Moon Ronin',
+      description: 'The moon is red. Your legend begins now.',
+      input_message_content: {
+        message_text:
+          '⚔️ ZANKI: BLOOD MOON RONIN\n\n' +
+          'The moon is red. The blade is hungry.\n\n' +
+          'Step into the world of the ronin, face deadly enemies and fight your way through the darkness.\n\n' +
+          'Think you can survive the Blood Moon?\n\n' +
+          'Sharpen your blade. Your legend begins now. 🩸'
+      },
+      reply_markup: {
+        inline_keyboard: [[
+          { text: '⚔️ PLAY NOW', url: appLink('') }
+        ]]
+      }
+    },
+    {
+      type: 'article',
+      id: 'duel-' + code,
+      title: '⚔️ Challenge a friend',
+      description: 'Challenge someone to a ZANKI duel.',
+      input_message_content: {
+        message_text:
+          `⚔️ ${who} challenges you to a ZANKI duel!\n\n` +
+          'Tap Fight to enter the arena. First to win 2 rounds takes the match.'
+      },
+      reply_markup: {
+        inline_keyboard: [[
+          { text: '⚔️ FIGHT!', url: appLink(code) }
+        ]]
+      }
+    },
+    {
+      type: 'article',
+      id: 'quick-' + Date.now(),
+      title: '🌸 Quick Match',
+      description: 'Find a random opponent.',
+      input_message_content: {
+        message_text:
+          '🌸 ZANKI: BLOOD MOON RONIN\n\n' +
+          'Ready for a fight? Find a random opponent and enter the arena.'
+      },
+      reply_markup: {
+        inline_keyboard: [[
+          { text: '🌸 QUICK MATCH', url: appLink('quick') }
+        ]]
+      }
+    }
+  ];
+
+  await tg('answerInlineQuery', {
+    inline_query_id: q.id,
+    results,
+    cache_time: 0,
+    is_personal: true
+  });
+
+  return;
+}
+
   const m = u.message;
   if (m && m.chat && typeof m.text === 'string' && m.text.startsWith('/start')) {
     await tg('sendMessage', {
